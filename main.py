@@ -92,7 +92,8 @@ def eval_policy(agent, env_name, seed, eval_episodes, discrete_action, env_args=
         return avg_predator_return
 
 def offline_train(config):
-    outdir = prepare_output_dir(config.dir + '/' + config.env_id, argv=sys.argv)
+    # outdir = prepare_output_dir(config.dir + '/' + config.env_id, argv=sys.argv)
+    outdir = config.dir + '/' + config.env_id
     print('\033[1;32mOutput files are saved in {} \033[1;0m'.format(outdir))
 
     torch.manual_seed(config.seed)
@@ -133,9 +134,9 @@ def offline_train(config):
         env_info=env_info, 
     )
 
-    if config.env_id in ['simple_tag', 'simple_world']:
-        pretrained_model_dir = './datasets/{}/pretrained_adv_model.pt'.format(config.env_id)
-        ma_agent.load_pretrained_preys(pretrained_model_dir)
+    # if config.env_id in ['simple_tag', 'simple_world']:
+    #     pretrained_model_dir = '../datasets/{}/pretrained_adv_model.pt'.format(config.env_id)
+    #     ma_agent.load_pretrained_preys(pretrained_model_dir)
 
     if config.env_id in ['simple_spread', 'simple_tag', 'simple_world']:
         replay_buffer = ReplayBuffer(
@@ -156,6 +157,7 @@ def offline_train(config):
     for t in range(config.num_steps + 1):
         if t % config.eval_interval == 0 or t == config.num_steps:
             eval_return = eval_policy(ma_agent, config.env_id, config.seed, config.eval_episodes, config.discrete_action, env_args=env_args)
+            print('Step: {}, Eval Return: {}'.format(t, eval_return))
 
         if (t % config.steps_per_update) < config.n_rollout_threads:
             ma_agent.prep_training(device='gpu') if config.use_gpu else ma_agent.prep_training(device='cpu')
@@ -196,13 +198,14 @@ if __name__ == '__main__':
     parser.add_argument('--gaussian_noise_std', default=0.1, type=float)
 
     parser.add_argument("--data_type", default='medium', type=str)
-    parser.add_argument('--dataset_dir', default='./datasets', type=str)
+    # parser.add_argument('--dataset_dir', default='./datasets', type=str)
+    parser.add_argument('--dataset_dir', default='../datasets', type=str)
 
     parser.add_argument('--eval_episodes', default=10, type=int)
     parser.add_argument('--eval_interval', default=1000, type=int)
     parser.add_argument('--num_steps', default=int(1e5), type=int)
 
-    parser.add_argument('--cql', default=0, type=int)
+    parser.add_argument('--cql', default=1, type=int)
     parser.add_argument('--cql_alpha', default=1.0, type=float)
     parser.add_argument("--lse_temp", default=1.0, type=float)
     parser.add_argument('--num_sampled_actions', default=10, type=int) 

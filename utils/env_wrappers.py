@@ -122,7 +122,7 @@ class DummyVecEnv(VecEnv):
 
     def reset(self):
         results = [env.reset() for env in self.envs]
-        return np.array(results)
+        return np.array(results, dtype=object) # MZJ: ragged sequences
 
     def close(self):
         return

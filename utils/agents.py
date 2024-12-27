@@ -48,7 +48,9 @@ class DDPGAgent(object):
         Outputs:
             action (PyTorch Variable): Actions for this agent
         """
+        self.policy.eval()
         action = self.policy(obs)
+        self.policy.train()
         if explore:
             x = action.clone().zero_()
             gaussian_noise = self.gaussian_noise_std * x.clone().normal_()

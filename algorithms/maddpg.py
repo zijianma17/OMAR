@@ -307,6 +307,7 @@ class MATD3(object):
                     cem_sampled_acs = dist.sample((self.omar_num_samples,)).detach().permute(1, 0, 2).clamp(-self.max_action, self.max_action)
 
                     formatted_cem_sampled_acs = cem_sampled_acs.view(-1, cem_sampled_acs.shape[-1])
+                    # formatted_cem_sampled_acs = cem_sampled_acs.reshape(-1, cem_sampled_acs.shape[-1]) # MZJ: view() is deprecated
 
                     vf_in = torch.cat((formatted_obs, formatted_cem_sampled_acs), dim=1)
                     all_pred_qvals = curr_agent.critic.Q1(vf_in)
@@ -342,6 +343,11 @@ class MATD3(object):
             pol_loss = self.omar_coe * mimic_term - (1 - self.omar_coe) * pred_qvals.mean()
         else:
             pol_loss = -curr_agent.critic.Q1(vf_in).mean()
+            ########### added by me ############
+            # add bc term
+            bc_loss = F.mse_loss(curr_pol_out, acs[agent_i])
+            pol_loss += bc_loss
+            ###################################
         
         pol_loss += (curr_pol_out ** 2).mean() * 1e-3
         

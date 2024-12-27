@@ -1,0 +1,11 @@
+debug:
+  script: "main.py"
+  args:
+    - "--env_id"
+    - "simple_tag"
+    - "--data_type"
+    - "xxx"
+    - "--seed"
+    - "0"
+    - "--omar"
+    - "0"

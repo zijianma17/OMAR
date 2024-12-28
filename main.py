@@ -134,9 +134,9 @@ def offline_train(config):
         env_info=env_info, 
     )
 
-    # if config.env_id in ['simple_tag', 'simple_world']:
-    #     pretrained_model_dir = '../datasets/{}/pretrained_adv_model.pt'.format(config.env_id)
-    #     ma_agent.load_pretrained_preys(pretrained_model_dir)
+    if config.env_id in ['simple_tag', 'simple_world']:
+        pretrained_model_dir = '../datasets/{}/pretrained_adv_model.pt'.format(config.env_id)
+        ma_agent.load_pretrained_preys(pretrained_model_dir)
 
     if config.env_id in ['simple_spread', 'simple_tag', 'simple_world']:
         replay_buffer = ReplayBuffer(
